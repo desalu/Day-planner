@@ -13,6 +13,8 @@
 * HTML
 * Javascript
 * Jquery
+* Bootstrap
+* CSS
 
 ## Demo
 [Day Planner](https://desalu.github.io/homework4/)
