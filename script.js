@@ -1,55 +1,45 @@
-$(document).ready(function() {
-  
+var idleTime = 0;
+var records = [];
 
+$(document).ready(function () {
 
- 
+  //Set up counter for reload every 15 second of inactive
+  var idleInterval = setInterval(timerIncrement, 1000);
 
+  $(this).mousemove(function (e) {
+    idleTime = 0;
+  });
 
- 
+  $(this).keypress(function (e) {
+    idleTime = 0;
+  });
 
+  function timerIncrement() {
+    idleTime++;
+    if (idleTime > 15) {
+      window.location.reload();
+    }
+  }
+
+  //Main content
   function hourUpdater() {
+
     // get current number of hours
     var currentHour = moment().hours();
 
-    //console.log(document.body.childNodes[3].childNodes[5].id);
-    //console.log(records[0].time);
-    
     //console.log('current hour:', currentHour);
 
     // loop over time blocks
-    $(".time-block").each(function() {
+    $(".time-block").each(function () {
 
       var blockHour = parseInt($(this).attr("id").split("-")[1]);
-      console.log(blockHour);
-      console.log(records[0].time.split("-")[1]);
-      ;
-      
-      
-     
-     
 
-      
-
-      //console.log("block hour:", blockHour);
-
-      // check if we've moved past this time
-      
-      // if the current hour is greater than the block hour
-      // then add class "past"
-  
       if (blockHour < currentHour) {
         $(this).addClass("past");
-      }
-      
-      // if they are equal
-      // then remove class "past" and add class "present"
-      else if (blockHour === currentHour) {
+      } else if (blockHour === currentHour) {
         $(this).removeClass("past");
         $(this).addClass("present");
-      }
-      // else
-      // remove class "past", remove class "present", add class "future"
-      else {
+      } else {
         $(this).removeClass("past");
         $(this).removeClass("present");
         $(this).addClass("future");
@@ -62,56 +52,56 @@ $(document).ready(function() {
       button.classList.add("btn", "saveBtn", "col-md-1");
       var icon = document.createElement("i");
       icon.classList.add("fas", "fa-save");
-      
+      textArea.id = "rmEl";
+      button.id = "rmEl";
+      icon.id = "rmEl";
+
       $(this).append(textArea);
       $(this).append(button);
       $(button).append(icon);
-  
-      $.each(records, function (indexInArray, valueOfElement) { 
+
+      //Display any data from record array
+      $.each(records, function (indexInArray, valueOfElement) {
 
         if (parseInt(valueOfElement.time.split("-")[1]) === blockHour) {
-          console.log(valueOfElement.value);
-          textArea.innerHTML=valueOfElement.value;
-          //textArea = valueOfElement.value;
-          console.log(textArea.value);
+
+          textArea.innerHTML = valueOfElement.value;
         }
-      
-        //console.log(indexInArray);
-        console.log(valueOfElement.time);
+
       });
 
     });
+
+    //trigger actions after clicking on save button
+    $(".saveBtn").click(function (e) {
+      event.preventDefault(e);
+
+      //Get this values
+      var value = $(this).siblings(".description").val();
+      var time = $(this).parent().attr("id");
+      var day = moment().format("Do");
+      records.push({
+        time,
+        value,
+        day
+      })
+      localStorage.setItem("time", JSON.stringify(records));
+
+    });
+
   }
-  var records = [];
-  
-
-  // Moved this section to the bottom because the buttons was not created before hourUpdater()
-  // listen for save button clicks
-  $(".saveBtn").on("click", function() {
-    console.log("success");
-    // // get nearby values
-    var value = $(this).siblings(".description").val();
-    var time = $(this).parent().attr("id");
-
-    console.log('value:', value);
-    console.log('time:', time);
-
-    // save the value in localStorage as time
-    records.push({time: time, value: value})
-    localStorage.setItem("time", JSON.stringify(records));
-
-    
-    
-  });
-
-  // set up interval to check if current time needs to be updated
-  // which means execute hourUpdater function every 15 seconds
 
   // load any saved data from localStorage
-    var recordStored = JSON.parse(window.localStorage.getItem("time"));
-    if (recordStored !== null) {
+  var recordStored = JSON.parse(window.localStorage.getItem("time"));
+
+  if (recordStored !== null) {
+    if (recordStored[0].day === moment().format("Do")) {
       records = recordStored;
+    } else {
+      // new day, new records
+      window.localStorage.setItem("time", null)
     }
+  }
 
   // display current day on page
   $("#currentDay").text(moment().format("dddd, MMMM Do"));
