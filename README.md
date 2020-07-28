@@ -18,3 +18,5 @@
 [Day Planner](https://desalu.github.io/homework4/)
 
 ## Screenshots
+![Day Planner images](./screenshot1.png)
+![Day Planner images](./screenshot2.png)
