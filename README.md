@@ -1,5 +1,4 @@
 
-###### homework5
 
 # Day Planner
 ### A simple web Application that help you plan your day.
